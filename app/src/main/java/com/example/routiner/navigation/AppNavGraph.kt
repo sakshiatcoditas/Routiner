@@ -1,47 +1,59 @@
 package com.example.routiner.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.routiner.presentation.ForgotPasswordScreen
 import com.example.routiner.presentation.LoginScreen
 import com.example.routiner.presentation.OnboardingScreen
+import com.example.routiner.presentation.RegisterGenderScreen
+import com.example.routiner.presentation.RegisterHabitScreen
+import com.example.routiner.presentation.RegisterScreen
 import com.example.routiner.presentation.SplashScreen
-import com.example.routiner.viewmodel.LoginViewModel
 
 @Composable
-fun AppNavGraph(){
+fun AppNavGraph() {
 
-    val loginViewModel: LoginViewModel = hiltViewModel()
+    val navController = rememberNavController()
 
-    val navController=rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = "splashscreen"){
+        startDestination = Route.SplashScreen.route
+    ) {
 
-        composable(Route.SplashScreen.route){
+        composable(Route.SplashScreen.route) {
             SplashScreen(
-                navController = rememberNavController()
+                navController = navController
             )
         }
 
-        composable (Route.OnboardingScreen.route){
-            OnboardingScreen(navController = rememberNavController())
+        composable(Route.OnboardingScreen.route) {
+            OnboardingScreen(navController = navController)
         }
 
-        composable (Route.LoginScreen.route){
-            LoginScreen(navController = rememberNavController(),
-                viewModel = loginViewModel
+        composable(Route.LoginScreen.route) {
+            LoginScreen(
+                navController = navController,
             )
         }
 
         composable(Route.ForgotPasswordScreen.route) {
-            ForgotPasswordScreen(navController = rememberNavController())
+            ForgotPasswordScreen(navController = navController)
+        }
 
+        composable(Route.RegisterScreen.route) {
+            RegisterScreen(
+                navController = navController
+            )
+        }
+
+        composable(Route.RegisterGenderScreen.route) {
+            RegisterGenderScreen(navController = navController)
+        }
+
+        composable(Route.RegisterHabitScreen.route) {
+            RegisterHabitScreen(navController = navController)
         }
     }
-
 }

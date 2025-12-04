@@ -6,6 +6,12 @@ enum class Route(val route: String) {
     OnboardingScreen("onboarding"),
     LoginScreen("login"),
     HomeScreen("home"),
-    ForgotPasswordScreen("forgotpassword")
+    ForgotPasswordScreen("forgotpassword"),
+
+    RegisterScreen("register"),
+
+    RegisterGenderScreen("registergender"),
+    RegisterHabitScreen("registerhabit")
+
 
 }

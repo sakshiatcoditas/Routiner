@@ -7,7 +7,8 @@ data class User(
     val password: String,
     val surname:String,
     val birthdate: String,
-    val habit:List<Habit>, //list of habits
+    val gender:String,
+    val habit:String
 
 
 

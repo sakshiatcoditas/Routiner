@@ -53,7 +53,8 @@ dependencies {
     kapt(libs.dagger.hilt.android.compiler)
     implementation(platform(libs.firebase.bom))
 //    implementation(libs.firebase.auth.ktx)
-    implementation(libs.firebase.database.ktx)
+//    implementation(libs.firebase.database.ktx)
+    implementation("com.google.firebase:firebase-database")
     implementation(libs.play.services.auth)
     implementation(libs.dagger.hilt.navigation.compose)
 

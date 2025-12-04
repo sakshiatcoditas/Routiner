@@ -24,7 +24,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-           AppNavGraph()
+            AppNavGraph()
+//            SplashScreen(
+//                navController = rememberNavController()
+//            )
         }
     }
 }

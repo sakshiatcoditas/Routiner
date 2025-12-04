@@ -1,161 +1,176 @@
 package com.example.routiner.presentation
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.routiner.R
 import com.example.routiner.navigation.Route
 import com.example.routiner.viewmodel.LoginViewModel
 
-
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     navController: NavController,
-    viewModel: LoginViewModel
+    viewModel: LoginViewModel = hiltViewModel()
 ) {
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
+    var passwordVisible by rememberSaveable { mutableStateOf(false) }
 
-    var email by rememberSaveable() {
-        mutableStateOf("")
+    val loginState = viewModel.loginState.collectAsState()
+    LaunchedEffect(loginState.value) {
+        when (loginState.value) {
+            is LoginState.Success -> {
+                navController.navigate(Route.HomeScreen.route) {
+                    popUpTo(Route.LoginScreen.route) { inclusive = true }
+                }
+                viewModel.resetState()
+            }
+            is LoginState.Error -> {
+
+                println("Login Error: ${(loginState.value as LoginState.Error).message}")
+            }
+            else -> {}
+        }
     }
 
-    var password by rememberSaveable() {
-        mutableStateOf("")
-    }
-
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-
-    ) {
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Continue with Email", fontWeight = FontWeight.Bold) },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.backarrow),
+                            contentDescription = "Back Arrow"
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent,
+                    titleContentColor = Color.Black,
+                    navigationIconContentColor = Color.Black
+                )
+            )
+        },
+        containerColor = Color.White
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(horizontal = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
+            Text(
+                text = "Welcome Back!",
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+
+            Text(
+                text = "Log in to continue your journey.",
+                color = Color.Gray,
+                modifier = Modifier.padding(bottom = 40.dp)
+            )
+
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text(text = "Email") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text(text = "Password") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    val image = if (passwordVisible)
+                        painterResource(id = R.drawable.passwordvisible)
+                    else
+                        painterResource(id = R.drawable.visibility_off)
+
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(painter = image, contentDescription = "Toggle password visibility")
+                    }
+                }
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "Forgot Password?",
+                color = Color.Blue,
+                textAlign = TextAlign.End,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        navController.navigate(Route.ForgotPasswordScreen.route)
+                    }
+            )
+            Spacer(modifier = Modifier.height(28.dp))
+
+            Text(
+                text = "Already have an account ? Register",
+                color = Color.Black,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        navController.navigate(Route.RegisterScreen.route)
+                    }
+            )
+
+
+            Spacer(modifier = Modifier.height(32.dp))
 
             Button(
-                onClick = {
-                    navController.navigate(Route.OnboardingScreen.route)
+                onClick = { viewModel.login(email, password) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                shape = RoundedCornerShape(12.dp),
+                enabled = email.isNotBlank() && password.isNotBlank(),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
+
+                ) {
+                if (loginState.value is LoginState.Loading) {
+                    CircularProgressIndicator(
+                        color = Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                } else {
+                    Text("Log In", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 }
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.backarrow),
-                    contentDescription = "back arrow"
-                )
             }
-
-            Text(
-                text = "Login Screen",
-                style = TextStyle.Default,
-                color = Color.Black
-            )
-
         }
-
-        OutlinedTextField(
-            value = email,
-            onValueChange = {
-                email=it
-            },
-            label = {
-                Text(text = "Email")
-            },
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.Black,
-                unfocusedContainerColor = Color.Black,
-                disabledContainerColor = Color.Black,
-            )
-
-
-
-        )
-
-        Spacer(modifier = Modifier.fillMaxSize().padding(12.dp))
-
-        OutlinedTextField(
-            value = password,
-            onValueChange = {
-              password=it
-            },
-            label = {
-                Text(text = "Password")
-            },
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.Black,
-                unfocusedContainerColor = Color.Black,
-                disabledContainerColor = Color.Black,
-            )
-
-
-
-        )
-
-        Spacer(modifier = Modifier.fillMaxSize().padding(12.dp))
-
-        Text(
-            text = "Forgot Password?",
-            style = TextStyle.Default,
-            color = Color.Black,
-            modifier = Modifier.size(
-                width = 200.dp,
-                height = 50.dp
-            ).
-            clickable(
-                onClick = {
-                    navController.navigate(Route.ForgotPasswordScreen.route)
-                }
-
-            )
-
-
-        )
-
-        Spacer(
-            modifier = Modifier.fillMaxSize().padding(12.dp)
-
-        )
-
-        Button(
-            onClick = {
-                viewModel.login(email, password)
-            },
-            modifier = Modifier.size(
-                width = 200.dp,
-                height = 50.dp
-            )
-        ) {
-            Text(
-                text = "Login",
-                style = TextStyle.Default,
-                color = Color.Black
-            )
-        }
-
-
     }
 }
+
+
+
+

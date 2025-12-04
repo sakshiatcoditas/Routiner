@@ -11,36 +11,43 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    val repository: AuthRepository
-):ViewModel()
+//    val repository: AuthRepository
+):ViewModel() {
 
     private val auth = FirebaseAuth.getInstance()
 
-    private val database= FirebaseDatabase.getInstance()
+    private val database = FirebaseDatabase.getInstance()
 
-   fun register(name: String, surname: String, birthdate: String, email: String, password: String){
-       auth.createUserWithEmailAndPassword(email, password)
-           .addOnCompleteListener{
-               if(it.isSuccessful){
-                   val user= User(
-                       id = auth.currentUser!!.uid,
-                       name = name,
-                       surname = surname,
-                       birthdate = birthdate,
-                       email = email,
-                       password = password,
-                       habit = emptyList()
-                   )
-                   database.getReference("users").child(auth.currentUser!!.uid).setValue(user)
+    fun register(
+        name: String,
+        surname: String,
+        birthdate: String,
+        email: String,
+        password: String
+    ) {
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    val user = User(
+                        id = auth.currentUser!!.uid,
+                        name = name,
+                        surname = surname,
+                        birthdate = birthdate,
+                        email = email,
+                        password = password,
+                        gender = "",
+                        habit = ""
+                    )
+                    database.getReference("users").child(auth.currentUser!!.uid).setValue(user)
 
 
-           }
-               else{
-                   it.exception?.message
-               }
-           }
+                } else {
+                    it.exception?.message
+                }
+            }
 
-   }
+    }
+}
 
 
 

@@ -1,11 +1,11 @@
 package com.example.routiner.presentation
 
-import android.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -17,10 +17,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.stylusHoverIcon
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import androidx.core.os.registerForAllProfilingResults
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
 
@@ -29,7 +28,7 @@ fun ForgotPasswordScreen(
     navController: NavController
 ){
 
-    var registeredEmail by rememberSaveable() {
+    var registeredEmail by rememberSaveable {
         mutableStateOf("")
     }
 
@@ -45,6 +44,8 @@ fun ForgotPasswordScreen(
             text = "Forgot Password Screen",
             style = TextStyle.Default,
             color = Color.Black,
+            fontSize = 12.sp
+
 
         )
         Spacer(modifier = Modifier.fillMaxSize().padding(
@@ -55,6 +56,8 @@ fun ForgotPasswordScreen(
             text = "Back to Login",
             style = TextStyle.Default,
             color = Color.Black,
+            fontSize = 12.sp
+
         )
 
         Spacer(modifier = Modifier.fillMaxSize().padding(
@@ -65,6 +68,8 @@ fun ForgotPasswordScreen(
             text = "Enter your Registered Email",
             style = TextStyle.Default,
             color = Color.Black,
+            fontSize = 12.sp
+
         )
 
         Spacer(modifier = Modifier.fillMaxSize().padding(
@@ -76,6 +81,10 @@ fun ForgotPasswordScreen(
             onValueChange = {
                 registeredEmail=it
             },
+            modifier = Modifier.fillMaxWidth(
+                0.8f
+            ),
+
             label = {
                 Text(text = "Email")
             }
